@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.001489917, g: 0.0013898879, b: 0.0013181248, a: 1}
+  m_IndirectSpecularColor: {r: 0.0014902266, g: 0.00139016, b: 0.0013183705, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4300,7 +4300,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Google Sheets
+  m_Text: Server
 --- !u!1 &160189460375683507
 GameObject:
   m_ObjectHideFlags: 0
@@ -4332,7 +4332,7 @@ GameObject:
   - component: {fileID: 160189460403977471}
   - component: {fileID: 160189460403977470}
   m_Layer: 5
-  m_Name: Button GoogleSheets
+  m_Name: Button Server
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4451,7 +4451,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 1_DataLodingScene
+          m_StringArgument: 2-1_LoginScene
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1 &160626300702037577
@@ -11348,7 +11348,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Local CSV
+  m_Text: Local
 --- !u!1 &720533662381472169
 GameObject:
   m_ObjectHideFlags: 0
@@ -11881,14 +11881,26 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 317296948}
         m_TargetAssemblyTypeName: VRSceneLoder, Assembly-CSharp
-        m_MethodName: LoadScene
+        m_MethodName: LoadSceneForLocal
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 2-1_LoginScene
+          m_StringArgument: 3_LobbyScene
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 317296948}
+        m_TargetAssemblyTypeName: VRSceneLoder, Assembly-CSharp
+        m_MethodName: SetCallDataForLocal
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!222 &720533662676934874
@@ -11912,7 +11924,7 @@ GameObject:
   - component: {fileID: 720533662676934873}
   - component: {fileID: 720533662676934872}
   m_Layer: 5
-  m_Name: Button Local CSV
+  m_Name: Button Local
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

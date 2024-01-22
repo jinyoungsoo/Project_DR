@@ -75,23 +75,71 @@ public class VRSceneLoder : MonoBehaviour
         StartCoroutine(LoadDelay(_SceneName));
     }
 
+    // 로컬용 씬 불러오는 메서드
+    // 씬을 불러오는 메서드
+    // _SceneName string을 매개변수로 불러올 수 있음
+    public void LoadSceneForLocal(string _SceneName)
+    {
+        if (string.IsNullOrEmpty(_SceneName))
+        {
+            GFunc.Log("전환할 씬을 찾지 못했습니다.");
+            return;
+        }
+        StartCoroutine(LoadDelay(_SceneName, true));
+    }
+
     // 딜레이가 있을 시 코루틴
-    IEnumerator LoadDelay(string _SceneName)
+    IEnumerator LoadDelay(string _SceneName, bool isLocal = false)
     {
         if (fader)
         {
             fader.DoFadeIn();                           // 페이더를 켜고
         }
 
+        yield return new WaitForSeconds (sceneDelay);   // 딜레이 이후
 
-            yield return new WaitForSeconds (sceneDelay);   // 딜레이 이후
+        // 로컬이 아닐 경우
+        if (isLocal.Equals(false))
+        {
+            SceneManager.LoadScene(_SceneName);             // 지정된 이름의 씬을 로딩
+        }
 
-        
-        SceneManager.LoadScene(_SceneName);             // 지정된 이름의 씬을 로딩
+        // 로컬일 경우
+        else
+        {
+            // 튜토리얼을 클리어 하지 않았을 경우
+            if (TutorialCheck())
+            {
+                SetFaderColor(Color.white);
+                SceneManager.LoadScene("2-2_TutorialRoom");
+            }
+
+            // 클리어 했을 경우
+            else
+            {
+                SceneManager.LoadScene(_SceneName);             // 지정된 이름의 씬을 로딩
+            }
+        }
     }
     public void SetFaderColor(Color color)
     {
         fader.SetFadeColor(color);
     }
 
+    // 데이터를 불러올 방식을 로컬로 설정
+    public void SetCallDataForLocal()
+    {
+        PlayerDataManager.SetCallDataForLocal();
+    }
+
+    // 로컬용 튜토리얼 여부 검사
+    private bool TutorialCheck()
+    {
+        if (PlayerDataManager.GetTutorial() == 0)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
 }

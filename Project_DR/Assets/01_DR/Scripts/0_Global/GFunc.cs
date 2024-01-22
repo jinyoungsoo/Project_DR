@@ -106,7 +106,8 @@ public static class GFunc
         int[] splitIds = new int[splitParams.Length];
         for (int i = 0; i < splitParams.Length; i++)
         {
-            splitIds[i] = int.Parse(splitParams[i]);
+            // 공백 제거 후 추가
+            splitIds[i] = int.Parse(splitParams[i].Trim());
         }
 
         return splitIds;

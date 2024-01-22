@@ -14,7 +14,17 @@ public class TutorialExit : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            PlayerDataManager.Save("tutorial", 1);
+            // 데이터 저장 방식이 서버일 경우
+            if (PlayerDataManager.IsLocal.Equals(false))
+            {
+                PlayerDataManager.Save("tutorial", 1);
+            }
+
+            // 로컬일 경우
+            else
+            {
+                PlayerDataManager.SaveTutorial(1);
+            }
 
             switch (level)
             {

@@ -10,10 +10,6 @@ public static class PlayerDataManager
     /*************************************************
      *                 Public Fields
      *************************************************/
-    #region [+]
-    /***********************
-     *      Properties
-     **********************/
     public static string PlayerID => _id;
     public static int HP => _hp;
     public static int Gold => _gold;
@@ -39,13 +35,12 @@ public static class PlayerDataManager
     public static string ClearTime => _clear_time;
     public static string QuestMain => _quest_main;
     public static int Tutorial => _tutorial;
+    public static bool IsLocal => _isLocal;
 
 
-    #endregion
     /*************************************************
      *                 Private Fields
      *************************************************/
-    #region [+]
     [Header("Player")]
     private static string _id = "";           // 플레이어의 ID
     private static int _hp;                   // 플레이어의 체력
@@ -79,20 +74,31 @@ public static class PlayerDataManager
     private static string _quest_main;        // 메인 퀘스트 진행도(직렬화 데이터)
     private static int _tutorial;             // 튜토리얼 클리어 여부(0:False / 1:True)
 
+    [Header("CallDataType")]
+    private static bool _isLocal = false;     // 데이터를 불러올 방식(서버/로컬)
 
-    #endregion
+
     /*************************************************
      *                 Public Methods
      *************************************************/
-    #region [+]
     /// <summary>
     /// GameManager를 트리거로 비동기로 코루틴을 실행 후, 
     /// <br></br>DB에서 데이터를 호출하고 PlayerDataManager의 데이터를 갱신한다.
     /// </summary>
     public static void Update(bool isUserDataManagerUpdate = false)
     {
-        // 유저 데이터 매니저에 코루틴을 요청해서 UpdateCoroutine을 실행
-        UserDataManager.Instance.StartCoroutine(UpdateCoroutine(isUserDataManagerUpdate));
+        // 불러올 데이터 타입이 서버일 경우에만 업데이트되게 설정
+        if (_isLocal.Equals(false))
+        {
+            // 유저 데이터 매니저에 코루틴을 요청해서 UpdateCoroutine을 실행
+            UserDataManager.Instance.StartCoroutine(UpdateCoroutine(isUserDataManagerUpdate));
+        }
+
+        // 로컬일 경우
+        else
+        {
+            UserDataManager.Instance.GetDataFromLocal();
+        }
     }
 
     public static void UpdateTutorial(string column = "tutorial")
@@ -136,11 +142,28 @@ public static class PlayerDataManager
         _quest_main = input;
     }
 
-    #endregion
+    // 로컬로 데이터를 불러오게끔 설정
+    public static void SetCallDataForLocal()
+    {
+        _isLocal = true;
+    }
+
+    // 튜토리얼 여부 호출
+    public static int GetTutorial()
+    {
+        return PlayerPrefs.GetInt("isTutorial");
+    }
+
+    // 튜토리얼 여부 저장
+    public static void SaveTutorial(int input)
+    {
+        PlayerPrefs.SetInt("isTutorial", input);
+    }
+
+
     /*************************************************
      *                 Private Methods
      *************************************************/
-    #region [+]
     // 폼을 생성 후 반환한다.
     private static WWWForm MakeForm(string command, string id,
         string column = "", string value = "")
@@ -257,11 +280,9 @@ public static class PlayerDataManager
     }
 
 
-    #endregion
     /*************************************************
      *                  Coroutines
      *************************************************/
-    #region [+]
     // DB에서 데이터를 가져오기 위한 비동기 코루틴
     private static IEnumerator UpdateCoroutine(bool isUserDataManagerUpdate)
     {
@@ -297,7 +318,6 @@ public static class PlayerDataManager
 
                 // 디버그
                 DebugData();
-
             }
 
             // using문을 사용해도 메모리 누수가 발생하여
@@ -384,13 +404,13 @@ public static class PlayerDataManager
         }
     }
 
-    #endregion
+
     /*************************************************
      *                    Debugs
      *************************************************/
-    #region [+]
     public static void DebugData()
     {
+        GFunc.Log("DebugData");
         GFunc.Log($"id: {PlayerDataManager.PlayerID}, hp: {PlayerDataManager.HP}, gold: {PlayerDataManager.Gold}, " +
             $"exp: {PlayerDataManager.Exp}, gold_increase: {PlayerDataManager.GoldIncrease}, exp_increase: {PlayerDataManager.ExpIncrease}, " +
             $"weapon_atk: {PlayerDataManager.WeaponAtk}, weapon_cri_rate: {PlayerDataManager.WeaponCriRate}, weapon_cri_damage: {PlayerDataManager.WeaponCriDamage}, " +
@@ -403,5 +423,5 @@ public static class PlayerDataManager
             $"tutorial: { PlayerDataManager.Tutorial}");
     }
 
-    #endregion
+
 }

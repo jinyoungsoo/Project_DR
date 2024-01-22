@@ -84,7 +84,18 @@ public partial class UserDataManager : MonoBehaviour
         //SetDebugData();
         GFunc.Log("데이터 요청 시간 : " + GetCurrentDate());
         GetReferenceData();
-        PlayerDataManager.Update(true); // 데이터 요청
+        
+        // 불러올 데이터 타입이 Server일 경우
+        if (PlayerDataManager.IsLocal.Equals(false))
+        {
+            PlayerDataManager.Update(true); // 데이터 요청
+        }
+
+        // 로컬일 경우
+        else
+        {
+            GetDataFromLocal();
+        }
     }
  
 
@@ -216,12 +227,132 @@ public partial class UserDataManager : MonoBehaviour
         Unit.UpdateDataFromDB();
     }
 
+
+    // 로컬에서 데이터 가져오기
+    public void GetDataFromLocal()
+    {
+        // 저장을 했을 경우에만 Gold/Exp를 가져옴
+        if (PlayerPrefs.GetInt("IsSave").Equals(1))
+        {
+            Gold = PlayerPrefs.GetInt("Gold");
+            Exp = PlayerPrefs.GetInt("Exp");
+        }
+
+        GFunc.Log("로컬에서 데이터를 가져옴");
+
+        // ######################### PC 업그레이드 #########################
+        HPLv = PlayerPrefs.GetInt("HPLV");
+        GainGoldLv = PlayerPrefs.GetInt("GainGoldLV");
+        GainExpLv = PlayerPrefs.GetInt("GainEXPLV");
+
+        // HP 업그레이드 세팅
+        DefaultHP = Data.GetFloat(1001, "Health");
+        MaxHP = UserData.GetMaxHP();
+        CurHP = MaxHP;
+
+        // 골드 획득량 업그레이드 세팅
+        if (GainGoldLv != 0)
+        {
+            GainGold = statData.upgradeGainGold[GainGoldLv - 1].sum;
+        }
+        // 경험치 획득량 업그레이드 세팅
+        if (GainExpLv != 0)
+        {
+            GainExp = statData.upgradeGainExp[GainExpLv - 1].sum;
+        }
+
+        // 총 레벨
+        Level = (HPLv + GainGoldLv + GainExpLv);
+
+        // ######################### 무기 업그레이드 #########################
+
+        WeaponAtkLv = PlayerPrefs.GetInt("WeaponAtkLV");
+        WeaponCriRateLv = PlayerPrefs.GetInt("WeaponCriRateLV");
+        WeaponCriDamageLv = PlayerPrefs.GetInt("WeaponCriDamageLV");
+        WeaponAtkRateLv = PlayerPrefs.GetInt("WeaponAtkRateLV");
+
+        _weaponAtk = Data.GetFloat(1100, "Damage");
+        _weaponCritRate = Data.GetFloat(1100, "CritChance");
+        _weaponCritDamage = Data.GetFloat(1100, "CritIncrease");
+        _weaponAtkRate = Data.GetFloat(1100, "AttackSpeed");
+
+        weaponAtk = _weaponAtk;
+        weaponCritRate = _weaponCritRate;
+        weaponCritDamage = _weaponCritDamage;
+        weaponAtkRate = _weaponAtkRate;
+
+        if (WeaponAtkLv != 0)
+        {
+            weaponAtk = _weaponAtk + statData.upgradeAtk[WeaponAtkLv - 1].sum1;
+        }
+        if (WeaponCriRateLv != 0)
+        {
+            weaponCritRate = _weaponCritRate + statData.upgradeCrit[WeaponCriRateLv - 1].sum1;
+        }
+        if (WeaponCriDamageLv != 0)
+        {
+            weaponCritDamage = _weaponCritDamage + statData.upgradeCritDmg[WeaponCriDamageLv - 1].sum1;
+        }
+        if (WeaponAtkRateLv != 0)
+        {
+            weaponAtkRate = _weaponAtkRate + statData.upgradeAtkSpd[WeaponAtkRateLv - 1].sum1;
+        }
+
+        // ######################### 스킬 업그레이드 #########################
+
+        // TODO 데이터 매니저에 추가 테이블 필요
+        Skill1Lv_1 = PlayerPrefs.GetInt("Skill_1_LV_1");
+        Skill1Lv_2 = PlayerPrefs.GetInt("Skill_1_LV_2");
+
+        Skill2Lv_1 = PlayerPrefs.GetInt("Skill_2_LV_1");
+        Skill2Lv_2 = PlayerPrefs.GetInt("Skill_2_LV_2");
+        Skill2Lv_3 = PlayerPrefs.GetInt("Skill_2_LV_3");
+
+        Skill3Lv = PlayerPrefs.GetInt("Skill_3_LV");
+
+        Skill4Lv_1 = PlayerPrefs.GetInt("Skill_4_LV_1");
+        Skill4Lv_2 = PlayerPrefs.GetInt("Skill_4_LV_2");
+        Skill4Lv_3 = PlayerPrefs.GetInt("Skill_4_LV_3");
+
+        // 랜딩 스킬 사용횟수 갱신
+        drillLandingCount = UserData.SetDrillLandingCount();
+
+        // ######################### ETC #########################
+
+        ClearCount = PlayerPrefs.GetInt("ClearCount");
+
+        // ######################### 클리어 데이터 #########################
+
+        JsonData = PlayerPrefs.GetString("MBTIData");
+
+        // json으로 변환된 string은 .NET Framework 디코딩이 필요
+        decodedString = System.Web.HttpUtility.UrlDecode(JsonData);
+
+        clearDatas = JsonUtility.FromJson<ClearDatas>(decodedString);
+
+        if (clearDatas.list == null) // 리스트가 없으면 새로 만들기
+        {
+            clearDatas.list = new List<ClearData>();
+        }
+
+        // 데이터를 불러오고 해야할 이벤트가 있다면 이벤트 실행
+        // Ex. 플레이어 상태창, 상점의 현재 골드 등
+        dataLoadSuccess = true;
+        GFunc.Log("데이터 로드 시간 : " + GetCurrentDate());
+
+        // 퀘스트 생성 & 업데이트
+        Unit.CreateQuestFromDataTable();
+        PlayerDataManager.SetQuestMain(PlayerPrefs.GetString("QuestData"));
+        Unit.UpdateUserQuestData(false);
+    }
+
     // DB에 데이터를 요청하기 위한 메서드
     // 메서드를 action에 담아 호출하면, 데이터가 로드 시 코루틴은 멈춘다.
     public void DBRequst(Action action)
     {
         StartCoroutine(CheckData(action));
     }
+
     // 델리게이트에 추가로 변경하기
     IEnumerator CheckData(Action action)
     {
@@ -249,9 +380,22 @@ public partial class UserDataManager : MonoBehaviour
 
         JsonData = JsonUtility.ToJson(clearDatas);   // json으로 변환
 
-        // 저장 후 업데이트
-        PlayerDataManager.Save("clear_mbti_value", JsonData);
-        PlayerDataManager.Save("clear_count", ClearCount);
+        // 저장 방식이 서버일 경우
+        if (PlayerDataManager.IsLocal.Equals(false))
+        {
+            // 저장
+            PlayerDataManager.Save("clear_mbti_value", JsonData);
+            PlayerDataManager.Save("clear_count", ClearCount);
+        }
+
+        // 로컬일 경우
+        else
+        {
+            PlayerPrefs.SetString("MBTIData", JsonData);
+            PlayerPrefs.SetInt("ClearCount", ClearCount);
+        }
+
+        // 업데이트
         PlayerDataManager.Update();
     }
     // 클리어 시간을 가져오는 함수
@@ -263,32 +407,78 @@ public partial class UserDataManager : MonoBehaviour
     // 플레이어 업그레이드 세이브
     public void SavePlayerUpgrade()
     {
-        PlayerDataManager.Save("exp", Exp);
-        PlayerDataManager.Save("hp", HPLv);
-        PlayerDataManager.Save("gold_increase", GainGoldLv);
-        PlayerDataManager.Save("exp_increase", GainExpLv);
+        // 저장 방식이 서버일 경우
+        if (PlayerDataManager.IsLocal.Equals(false))
+        {
+            PlayerDataManager.Save("exp", Exp);
+            PlayerDataManager.Save("hp", HPLv);
+            PlayerDataManager.Save("gold_increase", GainGoldLv);
+            PlayerDataManager.Save("exp_increase", GainExpLv);
+        }
+
+        // 로컬일 경우
+        else
+        {
+            PlayerPrefs.SetInt("Exp", Exp);
+            PlayerPrefs.SetInt("HPLV", HPLv);
+            PlayerPrefs.SetInt("GainGoldLV", GainGoldLv);
+            PlayerPrefs.SetInt("GainEXPLV", GainExpLv);
+        }
     }
+
     // 무기 업그레이드 세이브
     public void SaveWeaponUpgrade()
     {
-        PlayerDataManager.Save("exp", Exp);
-        PlayerDataManager.Save("weapon_atk", WeaponAtkLv);
-        PlayerDataManager.Save("weapon_atk_rate", WeaponAtkRateLv);
-        PlayerDataManager.Save("weapon_cri_damage", WeaponCriDamageLv);
-        PlayerDataManager.Save("weapon_cri_rate", WeaponCriRateLv);
+        // 저장 방식이 서버일 경우
+        if (PlayerDataManager.IsLocal.Equals(false))
+        {
+            PlayerDataManager.Save("exp", Exp);
+            PlayerDataManager.Save("weapon_atk", WeaponAtkLv);
+            PlayerDataManager.Save("weapon_atk_rate", WeaponAtkRateLv);
+            PlayerDataManager.Save("weapon_cri_damage", WeaponCriDamageLv);
+            PlayerDataManager.Save("weapon_cri_rate", WeaponCriRateLv);
+        }
+
+        // 로컬일 경우
+        else
+        {
+            PlayerPrefs.SetInt("Exp", Exp);
+            PlayerPrefs.SetInt("WeaponAtkLV", WeaponAtkLv);
+            PlayerPrefs.SetInt("WeaponAtkRateLV", WeaponAtkRateLv);
+            PlayerPrefs.SetInt("WeaponCriDamageLV", WeaponCriDamageLv);
+            PlayerPrefs.SetInt("WeaponCriRateLV", WeaponCriRateLv);
+        }
     }
     // 스킬 업그레이드 세이브
     public void SaveSkillUpgrade()
     {
-        PlayerDataManager.Save("skill_level_1_1", Skill1Lv_1);
-        PlayerDataManager.Save("skill_level_1_2", Skill1Lv_2);
-        PlayerDataManager.Save("skill_level_2_1", Skill2Lv_1);
-        PlayerDataManager.Save("skill_level_2_2", Skill2Lv_2);
-        PlayerDataManager.Save("skill_level_2_3", Skill2Lv_3);
-        PlayerDataManager.Save("skill_level_3", Skill3Lv);
-        PlayerDataManager.Save("skill_level_4_1", Skill4Lv_1);
-        PlayerDataManager.Save("skill_level_4_2", Skill4Lv_2);
-        PlayerDataManager.Save("skill_level_4_3", Skill4Lv_3);
+        // 저장 방식이 서버일 경우
+        if (PlayerDataManager.IsLocal.Equals(false))
+        {
+            PlayerDataManager.Save("skill_level_1_1", Skill1Lv_1);
+            PlayerDataManager.Save("skill_level_1_2", Skill1Lv_2);
+            PlayerDataManager.Save("skill_level_2_1", Skill2Lv_1);
+            PlayerDataManager.Save("skill_level_2_2", Skill2Lv_2);
+            PlayerDataManager.Save("skill_level_2_3", Skill2Lv_3);
+            PlayerDataManager.Save("skill_level_3", Skill3Lv);
+            PlayerDataManager.Save("skill_level_4_1", Skill4Lv_1);
+            PlayerDataManager.Save("skill_level_4_2", Skill4Lv_2);
+            PlayerDataManager.Save("skill_level_4_3", Skill4Lv_3);
+        }
+
+        // 로컬일 경우
+        else
+        {
+            PlayerPrefs.SetInt("Skill_1_LV_1", Skill1Lv_1);
+            PlayerPrefs.SetInt("Skill_1_LV_2", Skill1Lv_2);
+            PlayerPrefs.SetInt("Skill_2_LV_1", Skill2Lv_1);
+            PlayerPrefs.SetInt("Skill_2_LV_2", Skill2Lv_2);
+            PlayerPrefs.SetInt("Skill_2_LV_3", Skill2Lv_3);
+            PlayerPrefs.SetInt("Skill_3_LV", Skill3Lv);
+            PlayerPrefs.SetInt("Skill_4_LV_1", Skill4Lv_1);
+            PlayerPrefs.SetInt("Skill_4_LV_2", Skill4Lv_2);
+            PlayerPrefs.SetInt("Skill_4_LV_3", Skill4Lv_3);
+        }
     }
 
     // ####################### 디버그용 PC 데이터 리셋 ####################### \\
@@ -540,7 +730,17 @@ public partial class UserDataManager : MonoBehaviour
     // 퀘스트 정보(json)를 DB에 저장
     public void SaveQuestDatasToDB(string json)
     {
-        PlayerDataManager.Save("quest_main", json);
+        // 저장 방식이 서버일 경우
+        if (PlayerDataManager.IsLocal.Equals(false))
+        {
+            PlayerDataManager.Save("quest_main", json);
+        }
+
+        // 로컬일 경우
+        else
+        {
+            PlayerPrefs.SetString("QuestData", json);
+        }
     }
 
     public void DestroyUserDataManager()
@@ -563,11 +763,12 @@ public partial class UserDataManager : MonoBehaviour
         return _questRewardText;
     }
 
-
     // ######################### 세이브 데이터 #########################
     // 로컬에 데이터를 저장
     public void SaveLocalData()
     {
+        GFunc.Log("데이터를 저장했습니다. 로컬");
+        PlayerPrefs.SetInt("IsSave", 1);
         PlayerPrefs.SetInt("Gold", Gold);
         PlayerPrefs.SetInt("Exp", Exp);
         PlayerPrefs.SetInt("HPLV", HPLv);
@@ -588,32 +789,8 @@ public partial class UserDataManager : MonoBehaviour
         PlayerPrefs.SetInt("Skill_4_LV_3", Skill4Lv_3);
         PlayerPrefs.SetInt("ClearCount", ClearCount);
         PlayerPrefs.SetString("MBTIData", JsonData);
-        PlayerPrefs.SetString("QuestData", QuestMain);
-    }
-
-    // 로컬에 저장된 데이터를 가져옴
-    public void GetLocalSaveData()
-    {
-        Gold = PlayerPrefs.GetInt("Gold");
-        Exp = PlayerPrefs.GetInt("Exp");
-        HPLv = PlayerPrefs.GetInt("HPLV");
-        GainGoldLv = PlayerPrefs.GetInt("GainGoldLV");
-        GainExpLv = PlayerPrefs.GetInt("GainEXPLV");
-        WeaponAtkLv = PlayerPrefs.GetInt("WeaponAtkLV");
-        WeaponAtkRateLv = PlayerPrefs.GetInt("WeaponAtkRateLV");
-        WeaponCriRateLv = PlayerPrefs.GetInt("WeaponCriRateLV");
-        WeaponCriDamageLv = PlayerPrefs.GetInt("WeaponCriDamageLV");
-        Skill1Lv_1 = PlayerPrefs.GetInt("Skill_1_LV_1");
-        Skill1Lv_2 = PlayerPrefs.GetInt("Skill_1_LV_2");
-        Skill2Lv_1 = PlayerPrefs.GetInt("Skill_2_LV_1");
-        Skill2Lv_2 = PlayerPrefs.GetInt("Skill_2_LV_2");
-        Skill2Lv_3 = PlayerPrefs.GetInt("Skill_2_LV_3");
-        Skill3Lv = PlayerPrefs.GetInt("Skill_3_LV");
-        Skill4Lv_1 = PlayerPrefs.GetInt("Skill_4_LV_1");
-        Skill4Lv_2 = PlayerPrefs.GetInt("Skill_4_LV_2");
-        Skill4Lv_3 = PlayerPrefs.GetInt("Skill_4_LV_3");
-        ClearCount = PlayerPrefs.GetInt("ClearCount");
-        JsonData = PlayerPrefs.GetString("MBTIData");
-        PlayerDataManager.SetQuestMain(PlayerPrefs.GetString("QuestData"));
+        // 퀘스트 데이터 저장
+        //PlayerPrefs.SetString("QuestData", QuestMain);
+        //Unit.SaveQuestDataToDB();
     }
 }

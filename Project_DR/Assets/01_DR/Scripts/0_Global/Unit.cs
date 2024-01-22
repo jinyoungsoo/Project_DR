@@ -615,10 +615,10 @@ public static class Unit
     }
 
     // PlayerDataManager에 있는 정보로 퀘스트 목록을 업데이트 한다.
-    public static void UpdateUserQuestData()
+    public static void UpdateUserQuestData(bool isDecoding = true)
     {
         GFunc.Log("LoadUserQuestData()");
-        QuestManager.Instance.UpdateUserQuestData();
+        QuestManager.Instance.UpdateUserQuestData(isDecoding);
     }
 
     // DB에서 정보를 가져온다.

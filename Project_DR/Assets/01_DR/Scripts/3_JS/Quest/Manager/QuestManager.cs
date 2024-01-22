@@ -299,10 +299,11 @@ namespace Js.Quest
         }
 
         // PlayerDataManager에 있는 정보로 퀘스트 목록을 업데이트 한다.
-        public void UpdateUserQuestData()
+        public void UpdateUserQuestData(bool isDecoding = true)
         {
             // json으로 변환된 string은 .NET Framework 디코딩이 필요
-            string json = System.Web.HttpUtility.UrlDecode(PlayerDataManager.QuestMain);
+            string json = isDecoding.Equals(true) ? 
+                System.Web.HttpUtility.UrlDecode(PlayerDataManager.QuestMain) : PlayerDataManager.QuestMain;
 
             //GFunc.Log($"디코딩된 데이터: {json}");
 
