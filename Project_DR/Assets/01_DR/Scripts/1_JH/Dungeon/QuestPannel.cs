@@ -43,6 +43,14 @@ public class QuestPannel : MonoBehaviour
     public Dictionary<Quest, GameObject> QuestList = new Dictionary<Quest, GameObject>();
     private Vector3 offSize = new Vector3(0.000001f, 0.000001f, 0.000001f);
 
+
+    private void OnDisable()
+    {
+        QuestCallback.SubspecialQuestProgressCallback -= AddQuest;
+        QuestCallback.SubspecialQuestValueChangedCallback -= UpdateQuest;
+        QuestCallback.SubspecialQuestCompletedCallback -= RemoveQuest;
+    }
+
     private void Start()
     {
         QuestCallback.SubspecialQuestProgressCallback += AddQuest;
