@@ -22,6 +22,10 @@ public class TEST : MonoBehaviour
             UserDataManager.Instance.SaveLocalData();
         }
     }
+    public void DeleteAll()
+    {
+        PlayerPrefs.DeleteAll();
+    }
 
 
 }
