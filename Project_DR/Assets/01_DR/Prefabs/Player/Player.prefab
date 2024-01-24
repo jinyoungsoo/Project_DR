@@ -100190,7 +100190,7 @@ MonoBehaviour:
   player: {fileID: 4668945887704089343}
   optionUI: {fileID: 8822906912926717993}
   fader: {fileID: 0}
-  loginSceneName: 0_DataSelectScene
+  loginSceneName: 1-1_LocalStartScene
   rotationText: {fileID: 4545225095952776954}
   volume: {fileID: 6838551177672409525}
   masterSlider: {fileID: 152042555746027518}

@@ -986,19 +986,19 @@ public class LobbyEvent : MonoBehaviour
     // 결과창 세팅
     public void SetResultData()
     {
-        GameResult result = UserData.GetResult();
+        GameResult result = UserData.GetResult();                // 결과를 담고있는 데이터 가져오기
 
-        AddMonsterResult(result);
-        AddItemResult(result);
-        AddQuestResult(result);
+        AddMonsterResult(result);                                // 몬스터 결과 추가
+        AddItemResult(result);                                   // 아이템 결과 추가
+        AddQuestResult(result);                                  // 퀘스트 결과 추가
 
-        resultGold.text = UserData.GoldCalculator().ToString();
+        resultGold.text = UserData.GoldCalculator().ToString();  // 최종 EXP와 골드 계산
         resultExp.text = UserData.ExpCalculator().ToString();
 
-        UserData.AddGold(UserData.GoldCalculator());
+        UserData.AddGold(UserData.GoldCalculator());             // 최종 EXP와 골드 정산
         UserData.AddExp(UserData.ExpCalculator());
 
-        UserDataManager.Instance.SaveGoldandExp();
+        UserDataManager.Instance.SaveGoldandExp();               // 세이브 데이터에 저장
     }
 
     public void AddMonsterResult(GameResult result)
