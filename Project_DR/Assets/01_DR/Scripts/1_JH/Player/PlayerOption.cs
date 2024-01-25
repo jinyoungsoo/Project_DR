@@ -45,8 +45,8 @@ public class PlayerOption : MonoBehaviour
 
     private void Start()
     {
-// 에디터에서만 vr에뮬레이터 켜기
-#if UNITY_EDITOR
+        // 에디터에서만 vr에뮬레이터 켜기
+#if PC_Build
         vrEmulator.enabled = true;
 #endif
 
@@ -59,14 +59,6 @@ public class PlayerOption : MonoBehaviour
 
         // 세팅 값 가져오기
         GetSettingValue();
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.H))
-        {
-            Unit.AddFieldItem(this.transform.position, 5102);
-        }
     }
 
     // 환경설정 UI 입력

@@ -38,6 +38,7 @@ public class AudioManager : MonoBehaviour
   
     public Dictionary<string, Sound> musicSounds = new Dictionary<string, Sound>();
     public Dictionary<string, Sound> sfxSounds = new Dictionary<string, Sound>();
+
     public AudioMixer audioMixer;
     public AudioSource musicSource, sfxSource;
     public GameObject sourceParent;
@@ -73,6 +74,7 @@ public class AudioManager : MonoBehaviour
         audioMixer = Resources.Load<AudioMixer>("Audio/ProjectDR_AudioMixer");
         musicSource = this.gameObject.AddComponent<AudioSource>();
         sfxSource = this.gameObject.AddComponent<AudioSource>();
+
         musicSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("BGM")[0];
         sfxSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("SFX")[0];
         musicSource.loop = true;
@@ -140,17 +142,21 @@ public class AudioManager : MonoBehaviour
     // 특정 위치에 사운드를 플레이
     private void PlayClipAtPoint(AudioClip clip, Vector3 position, bool loopEnable = false)
     {
+        // SFX가 재생될 게임오브젝트 생성
         GameObject gameObject = new GameObject(clip.name + " Audio Source");
-
         gameObject.transform.parent = sourceParent.transform;
         gameObject.transform.position = position;
+
+        // 오디오 소스 지정
         AudioSource audioSource = (AudioSource)gameObject.AddComponent(typeof(AudioSource));
-        audioSource.clip = clip;
-        audioSource.spatialBlend = 1f;
-        audioSource.volume = 1f;
+        audioSource.clip = clip;        // 재생할 오디오 클립
+        audioSource.spatialBlend = 1f;  // 3D 공간에서 재생하기 위한 거리 설정
+        audioSource.volume = 1f;       
         audioSource.Play();
-        audioSource.loop = loopEnable;
         audioSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("SFX")[0];
+
+        // 루프와 관련된 경우
+        audioSource.loop = loopEnable;
         if (loopEnable == false)
         {
             UnityEngine.Object.Destroy(gameObject, clip.length * ((Time.timeScale < 0.01f) ? 0.01f : Time.timeScale));

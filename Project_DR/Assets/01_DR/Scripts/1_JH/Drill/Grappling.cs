@@ -226,7 +226,7 @@ public class Grappling : GrabbableEvents
         ShootDrill();                                         // 그래플링용 드릴 발사
 
 
-#if UNITY_EDITOR
+#if PC_Build
         // 에디터일 경우 체크 따로 하기 : 버튼 UP이 작동하지 않는 이유를 찾지 못함
         CheckExcute();
 #endif

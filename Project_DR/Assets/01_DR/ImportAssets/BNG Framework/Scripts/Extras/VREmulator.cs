@@ -328,11 +328,12 @@ namespace BNG {
 
         public void CheckPlayerControls() {
 
+#if !PC_Build
             // Require focus
             if(EditorOnly && !Application.isEditor) {
                 return;
             }
-
+#endif
             // Player Up / Down
             if(AllowUpDownControls) {
                 if (PlayerUpAction != null && PlayerUpAction.action.ReadValue<float>() == 1) {

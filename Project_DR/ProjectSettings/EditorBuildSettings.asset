@@ -5,12 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/01_DR/Scenes/Main/0_DataSelectScene.unity
     guid: 5e15ad36ba9b55f45b2c19bf0a4c8b93
-  - enabled: 1
+  - enabled: 0
     path: Assets/01_DR/Scenes/Main/1_DataLodingScene.unity
     guid: 06b56ed0ac2a9a347bdab9561f44927d
+  - enabled: 1
+    path: Assets/01_DR/Scenes/Main/1-1_LocalStartScene.unity
+    guid: e26f28c6770412b4caaaf8d211a9c8cf
   - enabled: 1
     path: Assets/01_DR/Scenes/Main/2-1_LoginScene.unity
     guid: 4c83a671732a2b44a88b10a906c2137b

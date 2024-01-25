@@ -347,16 +347,16 @@ public class GameManager : MonoBehaviour
         Quest curSubQuest = Unit.GetInProgressSubQuest();    // 현재 진행중인 서브 퀘스트 반환 (보스 처치 퀘스트)
         int clearID = curSubQuest.QuestData.ID;              // 진행중 서브 퀘스트 ID
         int[] clearEventIDs = Unit.ClearQuestByID(clearID);  // 완료 상태로 변경 & 보상 지급 & 선행퀘스트 조건이 있는 퀘스트들 조건 확인후 시작가능으로 업데이트
-        //if (clearEventIDs != null)
-        //{
-        //    for (int i = 0; i < clearEventIDs.Length; i++)
-        //    {
-        //        if (clearEventIDs[i] == 0)
-        //            break;
-        //        Quest quest = Unit.GetQuestByID(clearEventIDs[i]);
-        //        quest.ChangeState(1);
-        //    }
-        //}
+        if (clearEventIDs != null)
+        {
+            for (int i = 0; i < clearEventIDs.Length; i++)
+            {
+                if (clearEventIDs[i] == 0)
+                    break;
+                Quest quest = Unit.GetQuestByID(clearEventIDs[i]);
+                quest.ChangeState(1);
+            }
+        }
     }
 
     #endregion

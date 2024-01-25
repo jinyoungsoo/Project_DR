@@ -1080,7 +1080,7 @@ public class Old_Boss : MonoBehaviour
                 Unit.InProgressQuestByID(clearEventIDs[i]);        // 다음 퀘스트 진행중 으로 변경
             }
         }
-        Unit.SaveQuestDataToDB();
+        //Unit.SaveQuestDataToDB();
     }
 
     public void BossDie()

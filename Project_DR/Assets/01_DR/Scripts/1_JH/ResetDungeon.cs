@@ -6,11 +6,7 @@ using BNG;
 public class ResetDungeon : MonoBehaviour
 {
     public Button button;
-    // Start is called before the first frame update
-    void Start()
-    {
-        button = transform.GetChild(0).GetChild(1).GetComponent<Button>();
-    }
+
 
    public void ResetDungeonBtn()
     {

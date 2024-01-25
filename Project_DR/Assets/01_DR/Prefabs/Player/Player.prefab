@@ -299,6 +299,9 @@ MonoBehaviour:
   shootDisableEvent:
     m_PersistentCalls:
       m_Calls: []
+  bomb: 0
+  bombForce: 0
+  damageVal: 0
 --- !u!65 &1983118996
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -72102,6 +72105,9 @@ MonoBehaviour:
   shootDisableEvent:
     m_PersistentCalls:
       m_Calls: []
+  bomb: 0
+  bombForce: 0
+  damageVal: 0
 --- !u!1 &6526271330640050065
 GameObject:
   m_ObjectHideFlags: 0
@@ -100184,7 +100190,7 @@ MonoBehaviour:
   player: {fileID: 4668945887704089343}
   optionUI: {fileID: 8822906912926717993}
   fader: {fileID: 0}
-  loginSceneName: 2-1_LoginScene
+  loginSceneName: 1-1_LocalStartScene
   rotationText: {fileID: 4545225095952776954}
   volume: {fileID: 6838551177672409525}
   masterSlider: {fileID: 152042555746027518}
